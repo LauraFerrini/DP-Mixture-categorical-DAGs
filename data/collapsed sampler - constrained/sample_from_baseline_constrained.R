@@ -18,7 +18,7 @@
 library(pcalg)
 library(gRbase)
 
-source("move_dag_constrained.R")
+source("data/collapsed sampler - constrained/move_dag_constrained.R")
 
 sample_baseline_dags = function(S, burn, q, a_pi, b_pi, A_constr){
   

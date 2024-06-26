@@ -1,7 +1,7 @@
-source("sample_from_baseline_constrained.R")
-source("prob_ik_nonempty_function_new_rcpp.R")
-source("marg_dag.R")
-source("normalize_weights.R")
+source("data/collapsed sampler - constrained/sample_from_baseline_constrained.R")
+source("data/collapsed sampler - constrained/prob_ik_nonempty_function_new_rcpp.R")
+source("data/collapsed sampler - constrained/marg_dag.R")
+source("data/collapsed sampler - constrained/normalize_weights.R")
 
 
 library(abind)

@@ -1,10 +1,6 @@
-#setwd("/Users/laura/Desktop/2024 - clustering categorical models")
-setwd("./real data - cardiotoxicity dataset for breast cancer patients ")
-
-X = read.csv("data.csv")
-
-setwd("./collapsed sampler - constrained") 
-source("GIBBS_collapsed_rcpp_constrained.R")
+X = read.csv("data/data.csv")
+head(X)
+source("data/collapsed sampler - constrained/GIBBS_collapsed_rcpp_constrained.R")
 
 library(ggplot2)
 library(ggmosaic)
