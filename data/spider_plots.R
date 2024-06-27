@@ -46,11 +46,11 @@ prop_all = rbind(prop, apply(X_cl1, 2, mean), apply(X_cl2, 2, mean))
 prop_all = cbind(data = c("pooled", "cluster 1", "cluster 2"), prop_all)
 
 pdf('data/spider_cl1.pdf', pointsize=10, width=9, height=9)
-p = prop_all[1:2, ] %>%
+prop_all[1:2, ] %>%
   ggradar(group.line.width = 1,
           group.point.size = 1.5, group.colours = c("#1b9e77", "grey")) +
   theme(legend.position = "bottom", legend.title = element_text(size = 17))
-p
+
 dev.off()
 pdf('data/spider_cl2.pdf', pointsize=10, width=9, height=9)
 prop_all[c(1,3), ] %>%
