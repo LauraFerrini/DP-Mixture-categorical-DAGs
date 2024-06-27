@@ -1,7 +1,7 @@
-source("sample_from_baseline.R")
-source("prob_ik_nonempty_function_new_rcpp.R")
-source("marg_dag.R")
-source("normalize_weights.R")
+source("MCMC/sample_from_baseline.R")
+source("MCMC/prob_ik_nonempty_function_new_rcpp.R")
+source("MCMC/marg_dag.R")
+source("MCMC/normalize_weights.R")
 
 
 library(abind)

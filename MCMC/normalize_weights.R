@@ -10,6 +10,3 @@ normalize_weights <- function(prob){
 }
 
 # valutare se serve davvero escludere NA (ossia se non possono esserci)
-
-#norm_Probs = t(sapply(1:n, function(i) normalize_weights(Probs, i)))
-#rowSums(norm_Probs)

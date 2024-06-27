@@ -13,7 +13,7 @@ out = parLapply(clus, 1:N, function(l){
   
   ## Simulate data
   
-  source("generate_data_b.R")
+  source("simulations/generate_data_b.R")
   
   set.seed(l)
   dag_1 = (t(as(randomDAG(n = q, prob = w), "matrix")) != 0)*1
@@ -44,7 +44,7 @@ out = parLapply(clus, 1:N, function(l){
   
   I.cal  = sapply(1:ncol(Y), function(j) length(unique(Y[,j]))) # gives the number of levels for each var
   
-  source("GIBBS_collapsed_rcpp.R")
+  source("MCMC/GIBBS_collapsed_rcpp.R")
   
   out_mcmc_collapsed = Gibbs_collapsed(Y = Y, S = S, burn_in = burn, a_pi = a_pi,
                                        b_pi = b_pi, a_alpha = a_alpha, a = a,
@@ -53,14 +53,13 @@ out = parLapply(clus, 1:N, function(l){
   
   out_simil_dag = out_mcmc_collapsed$simil_mat
   out_probs_dag = out_mcmc_collapsed$graph_probs
-  #out_xi_dag    = out_mcmc_collapsed$Xi
   
   
   ## Method 2: Oracle -> only for structure learning
   
   xi = c(rep(1, nrow(Y1)), rep(2, nrow(Y2)))
   
-  source("Gibbs_collapsed_oracle.R")
+  source("MCMC/Gibbs_collapsed_oracle.R")
   
   out_oracle = Gibbs_collapsed_ORACLE(Y, S, burn_in = burn, a_pi = a_pi, b_pi = b_pi, ne = ne, 
                                       a = a, xi = xi)
@@ -70,24 +69,21 @@ out = parLapply(clus, 1:N, function(l){
   
   ## Method 3: No dags -> the update of dags is replaced by proposing always an empty dag 
   
-  source("Gibbs_collapsed_nodags.R")
+  source("MCMC/Gibbs_collapsed_nodags.R")
   
   out_mcmc_nodags = Gibbs_collapsed_no_dags(Y = Y, S = S, burn_in = burn,
                                             a_alpha = a_alpha, a = a,
                                             b_alpha = b_alpha, ne = NULL)
   
   out_simil_nodag = out_mcmc_nodags$simil_mat
-  #out_xi_nodag    = out_mcmc_nodags$Xi
   
   
   return(out = list(data    = Y_data,
                     xi_true = xi,
                     out_simil_dag = out_simil_dag,
                     out_probs_dag = out_probs_dag,
-                    #out_xi_dag    = out_xi_dag,
                     out_probs_dag_oracle = out_probs_dag_oracle,
                     out_simil_nodag      = out_simil_nodag
-                    #out_xi_nodag         = out_xi_nodag
   ))
   
 })

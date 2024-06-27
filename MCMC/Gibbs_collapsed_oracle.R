@@ -1,5 +1,5 @@
-source("marg_dag.R")
-source("move_dag.R")
+source("MCMC/marg_dag.R")
+source("MCMC/move_dag.R")
 library(abind)
 library(plyr)
 library(prodlim)

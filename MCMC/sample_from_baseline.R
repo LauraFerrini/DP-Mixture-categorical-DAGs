@@ -18,7 +18,7 @@
 library(pcalg)
 library(gRbase)
 
-source("move_dag.r")
+source("MCMC/move_dag.r")
 
 sample_baseline_dags = function(S, burn, q, a_pi, b_pi){
   
