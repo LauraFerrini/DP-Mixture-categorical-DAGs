@@ -40,7 +40,7 @@ t1 = proc.time() - t0
 
 # the output of the mcmc algorithm has been stored in the file "out_breastcancer1.RData"
 
-save(out_mcmc, file = "out_breastcancer1.RData")
+save(out_mcmc, file = "data/out_breastcancer1.RData")
 ## Recover posterior distribution of DAG parameters (and so causal effects) with the file ""
 
 
