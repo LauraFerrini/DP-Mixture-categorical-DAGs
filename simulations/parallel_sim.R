@@ -46,6 +46,7 @@ out = parLapply(clus, 1:N, function(l){
   
   source("MCMC/GIBBS_collapsed_rcpp.R")
   
+  set.seed(l+123)
   out_mcmc_collapsed = Gibbs_collapsed(Y = Y, S = S, burn_in = burn, a_pi = a_pi,
                                        b_pi = b_pi, a_alpha = a_alpha, a = a,
                                        b_alpha = b_alpha, ne = ne)
@@ -60,7 +61,7 @@ out = parLapply(clus, 1:N, function(l){
   xi = c(rep(1, nrow(Y1)), rep(2, nrow(Y2)))
   
   source("MCMC/Gibbs_collapsed_oracle.R")
-  
+  set.seed(l+456)
   out_oracle = Gibbs_collapsed_ORACLE(Y, S, burn_in = burn, a_pi = a_pi, b_pi = b_pi, ne = ne, 
                                       a = a, xi = xi)
   
@@ -68,7 +69,7 @@ out = parLapply(clus, 1:N, function(l){
   
   
   ## Method 3: No dags -> the update of dags is replaced by proposing always an empty dag 
-  
+  set.seed(l+789)
   source("MCMC/Gibbs_collapsed_nodags.R")
   
   out_mcmc_nodags = Gibbs_collapsed_no_dags(Y = Y, S = S, burn_in = burn,
