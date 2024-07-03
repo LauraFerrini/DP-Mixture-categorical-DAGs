@@ -1,3 +1,4 @@
+library(parallel)
 # simulations over samples
 
 nc   = detectCores()   # detect cores
@@ -13,15 +14,15 @@ out = parLapply(clus, 1:N, function(l){
   
   ## Simulate data
   
-  source("simulations/generate_data_b.R")
+  source("simulations/generate_data.R")
   
   set.seed(l)
   dag_1 = (t(as(randomDAG(n = q, prob = w), "matrix")) != 0)*1
   set.seed(l+1)
   dag_2 = (t(as(randomDAG(n = q, prob = w), "matrix")) != 0)*1
   
-  Y1_data = gen_data_from_dag(l, n_k, dag_1, delta = TRUE, alpha = alpha, b = b)
-  Y2_data = gen_data_from_dag(l+1, n_k, dag_2, delta = TRUE, alpha = alpha, b = b)
+  Y1_data = gen_data_from_dag(l, n_k, dag_1, alpha = alpha)
+  Y2_data = gen_data_from_dag(l+1, n_k, dag_2, alpha = alpha)
   Y_data  = list(Y1_data = Y1_data, Y2_data = Y2_data)
   
   Y1 = Y1_data$Y
@@ -49,7 +50,7 @@ out = parLapply(clus, 1:N, function(l){
   set.seed(l+123)
   out_mcmc_collapsed = Gibbs_collapsed(Y = Y, S = S, burn_in = burn, a_pi = a_pi,
                                        b_pi = b_pi, a_alpha = a_alpha, a = a,
-                                       b_alpha = b_alpha, ne = ne)
+                                       b_alpha = b_alpha, A_constr = NULL)
   
   
   out_simil_dag = out_mcmc_collapsed$simil_mat
@@ -63,7 +64,7 @@ out = parLapply(clus, 1:N, function(l){
   source("MCMC/Gibbs_collapsed_oracle.R")
   set.seed(l+456)
   out_oracle = Gibbs_collapsed_ORACLE(Y, S, burn_in = burn, a_pi = a_pi, b_pi = b_pi, ne = ne, 
-                                      a = a, xi = xi)
+                                      a = a, xi = xi, A_constr = NULL)
   
   out_probs_dag_oracle = out_oracle$graph_probs
   

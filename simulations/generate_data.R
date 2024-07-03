@@ -48,6 +48,6 @@ gen_data_from_dag = function(i, n, dag, alpha){
   return(out_data = list(Y = Y, Z = Z, Sigma = Sigma))
 }
 
-# Per valutare performance clustering considerare valori di B più grandi e delta random (in modo che anche le marginali delle Y possano essere diverse da un gruppo all'altro)
+
 
 
