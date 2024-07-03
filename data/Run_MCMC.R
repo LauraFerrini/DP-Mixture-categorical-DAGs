@@ -4,12 +4,8 @@ library(dplyr)
 
 source("data/collapsed sampler - constrained/GIBBS_collapsed_rcpp_constrained.R")
 
-X = read.csv("data/data.csv")
+X = read.csv("data/breast_cancer.csv")
 head(X)
-
-X = X[,-1]
-X = X[, c(3,2,1,4:21)] # just some reversal of the columns
-colnames(X)
 n = nrow(X)
 q = ncol(X)
 # set the constraints
@@ -28,7 +24,7 @@ a_alpha = 3; b_alpha = 1
 
 # ne = NULL -> no constraints on the maximum number of neighborhoods per node
 a = 1
-I.cal  = sapply(1:ncol(X), function(j) length(unique(X[,j]))) # gives the number of levels for each var
+#I.cal  = sapply(1:ncol(X), function(j) length(unique(X[,j]))) # gives the number of levels for each var
 X = as.matrix(X)
 t0 = proc.time()
 

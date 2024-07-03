@@ -103,7 +103,6 @@ Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_co
     
     logProbs = matrix(nrow = n, ncol = K_star) 
     
-    # I.cal da inserire come argomento anche in funzione per la predictive
     
     for(k in 1:(K_star - 1)){
       
