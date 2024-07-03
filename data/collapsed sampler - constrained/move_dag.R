@@ -42,7 +42,7 @@ actions = c("id","dd","rd")
 ## Main function ##
 ###################
 
-move = function(A, q = q, A_constr = A_constr){
+move = function(A, q = q, A_constr = NULL){
   
   ###########
   ## Input ##
@@ -62,6 +62,11 @@ move = function(A, q = q, A_constr = A_constr){
   # type.operator : type of the operator applied to A to obtain A_new (1: insert; 2: delete; 3: reverse edge)
   # nodes         : (2,1) vector with numerical labels of the two nodes involved in the move
   
+  if(is.null(A_constr)){
+    
+    A_constr = matrix(0, q, q)
+    
+  }
   
   A_na = A
   diag(A_na) = NA

@@ -8,7 +8,7 @@ library(abind)
 library(plyr)
 library(prodlim)
 
-Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_constr) {
+Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_constr = NULL) {
   
   ###############
   #### INPUT ####
@@ -48,6 +48,12 @@ Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_co
   
   n_base    = S
   burn_base = burn_in
+  
+  if(is.null(A_constr)){
+    
+    A_constr = matrix(0, q, q)
+    
+  }
   
   #0. Get draws from the baseline of the Dags
   

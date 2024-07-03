@@ -1,5 +1,5 @@
 source("MCMC/sample_from_baseline.R")
-source("MCMC/prob_ik_nonempty_function_new_rcpp.R")
+source("MCMC/prob_ik_nonempty_function.R")
 source("MCMC/marg_dag.R")
 source("MCMC/normalize_weights.R")
 
@@ -8,7 +8,7 @@ library(abind)
 library(plyr)
 library(prodlim)
 
-Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, ne, a) {
+Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_constr = NULL) {
   
   ###############
   #### INPUT ####
@@ -18,12 +18,12 @@ Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, ne, a) 
   # S           : number of MCMC iterations
   # burn_in     : the burn-in 
   # a           : the common prior hyper-parameter of Thetas in the Dirichlet
-  # a_alpha     : hyper-paramerameter of the concentration parameter alpha0 of the DP 
-  # b_alpha     : hyper-paramerameter of the concentration parameter alpha0 of the DP 
+  # a_alpha     : hyper-parameter of the concentration parameter alpha0 of the DP 
+  # b_alpha     : hyper-parameter of the concentration parameter alpha0 of the DP 
   # ne          : maximum number of node-neighbors in the DAG -> parameter of the move() function 
   # a_pi        : hyper-parameter of the Beta prior on probability of edge inclusion pi -> sample_baseline_dags()
   # b_pi        : hyper-parameter of the Beta prior on probability of edge inclusion pi
-  
+  # A_constr    : (q,q) adjacency matrix containing constraints on the edges orientation
   ################
   #### OUTPUT ####
   ################
@@ -49,10 +49,16 @@ Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, ne, a) 
   n_base    = S
   burn_base = burn_in
   
+  if(is.null(A_constr)){
+    
+    A_constr = matrix(0, q, q)
+    
+  }
+  
   #0. Get draws from the baseline of the Dags
   
   out_baseline = sample_baseline_dags(S = n_base, burn = burn_base, 
-                                      q = q, a_pi = a_pi, b_pi = b_pi)$DAG_chain
+                                      q = q, a_pi = a_pi, b_pi = b_pi, A_constr = A_constr)$DAG_chain
   
   #####################
   # Set initial values#
@@ -103,7 +109,6 @@ Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, ne, a) 
     
     logProbs = matrix(nrow = n, ncol = K_star) 
     
-    # I.cal da inserire come argomento anche in funzione per la predictive
     
     for(k in 1:(K_star - 1)){
       
@@ -164,7 +169,7 @@ Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, ne, a) 
     for (k in set){
       
       Dag = Dags[,,k]
-      Dag_move = move(A = Dag, q = q, ne = ne)
+      Dag_move = move(A = Dag, q = q, A_constr = A_constr)
       
       Dag_star      = Dag_move$A_new           # adjacency matrix of the proposed DAG
       nodes_star    = Dag_move$nodes           # nodes (u,v) involved in the local move leading to Dag_star
