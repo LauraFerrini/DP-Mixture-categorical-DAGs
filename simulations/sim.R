@@ -9,12 +9,11 @@ rm(list = ls())
 q = 10
 w = 3/(2*q)
 
-b = 0
 alpha = 0.4
 
-#n_k = 100
+n_k = 100
 #n_k = 200
-n_k = 500
+#n_k = 500
 
 S    = 12000
 burn = 2000
@@ -24,18 +23,17 @@ N = 40 # changed as 40 the number of replications
 ######
 
 library("parallel")
+
 maxcore = min(detectCores(), N)
 
 maxcore = 10
-
-# isFALSE = function(x){identical(x, FALSE)}
 
 tm   = proc.time()
 out  = source("simulations/parallel_sim.R")
 time = proc.time() - tm
 
 
-filesaved = paste0("q", q, "_nk", n_k, "_alpha", alpha*100, "_b", b, ".RData")
+filesaved = paste0("simulations/q", q, "_nk", n_k, "_alpha", alpha*100,".RData")
 save.image(file = filesaved)
 
 

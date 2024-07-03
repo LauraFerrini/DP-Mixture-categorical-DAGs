@@ -31,7 +31,7 @@ gen_data_from_dag = function(i, n, dag, alpha){
   Sigma_cond = diag(rep(1, q))
   
   Sigma = solve(t(B))%*%Sigma_cond%*%solve(B); mu = c(rep(0, q))
-  mu    = runif(n = q, -b, b)
+  mu    = runif(n = q)
   
   library(mvtnorm)
   
