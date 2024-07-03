@@ -2,7 +2,7 @@ library(ggplot2)
 library(ggmosaic)
 library(dplyr)
 
-source("data/collapsed sampler - constrained/GIBBS_collapsed_rcpp_constrained.R")
+source("MCMC/GIBBS_collapsed_rcpp.R")
 
 X = read.csv("data/breast_cancer.csv")
 head(X)

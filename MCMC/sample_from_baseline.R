@@ -18,9 +18,9 @@
 library(pcalg)
 library(gRbase)
 
-source("MCMC/move_dag.r")
+source("MCMC/move_dag.R")
 
-sample_baseline_dags = function(S, burn, q, a_pi, b_pi){
+sample_baseline_dags = function(S, burn, q, a_pi, b_pi, A_constr){
   
   DAG_chain = array(NA, c(q, q, S))
   
@@ -32,7 +32,7 @@ sample_baseline_dags = function(S, burn, q, a_pi, b_pi){
   
   for(s in 2:S){
     
-    move_star = move(A = DAG, q = q)
+    move_star = move(A = DAG, q = q, A_constr)
     
     DAG_star  = move_star$A_new
     
