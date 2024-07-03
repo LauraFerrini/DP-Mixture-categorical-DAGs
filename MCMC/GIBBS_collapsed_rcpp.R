@@ -66,7 +66,7 @@ Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_co
   
   K_inits = 2    ## number of clusters
   
-  alpha_0 = 0.5 ## precision parameter
+  alpha_0 = 0.5  ## precision parameter
   alpha_0_chain[[1]] = alpha_0
   
   ## DAGs D_1, ..., D_K (empty)

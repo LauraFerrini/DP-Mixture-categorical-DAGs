@@ -1,7 +1,7 @@
 library(pcalg)
 library(gRbase)
 
-gen_data_from_dag = function(i, n, dag, delta = FALSE, alpha, b = 0){
+gen_data_from_dag = function(i, n, dag, alpha){
   
   # This function randomly generates a categorical binary dataset from a given DAg
   
@@ -12,7 +12,7 @@ gen_data_from_dag = function(i, n, dag, delta = FALSE, alpha, b = 0){
   # i     : a numerical seed, required for reproducibility
   # n     : the number of observations
   # dag   : (q, q) adjacency matrix of a dag 
-  # delta : a (q,1) vector of cut-offs for categorical-data generation from latent Normal draws
+  # alpha
   
   ############
   ## OUTPUT ##
@@ -38,30 +38,14 @@ gen_data_from_dag = function(i, n, dag, delta = FALSE, alpha, b = 0){
   Z = data.frame(rmvnorm(n, mu, Sigma))
   Y = Z
   
-  if(delta == TRUE){
+  for(j in 1:q){
     
-    for(j in 1:q){
+    gamma_j = runif(1, quantile(Z[,j], alpha), quantile(Z[,j], 1-alpha))
+    Y[,j][Z[,j] >= gamma_j] = 1; Y[,j][Z[,j] < gamma_j] = 0
       
-      gamma_j = runif(1, quantile(Z[,j], alpha), quantile(Z[,j], 1-alpha))
-      
-      Y[,j][Z[,j] >= gamma_j] = 1; Y[,j][Z[,j] < gamma_j] = 0
-      
-    }
-    
-  }else{
-    
-    cut_offs = rep(0,q)
-    
-    for(j in 1:q){
-      
-      Y[,j] = ifelse(Z[,j] > cut_offs[j], 1, 0)
-      
-    }
-    
   }
   
   return(out_data = list(Y = Y, Z = Z, Sigma = Sigma))
-  
 }
 
 # Per valutare performance clustering considerare valori di B più grandi e delta random (in modo che anche le marginali delle Y possano essere diverse da un gruppo all'altro)

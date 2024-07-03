@@ -1,4 +1,4 @@
-source("MCMC/prob_ik_nonempty_function_new_rcpp.R")
+source("MCMC/prob_ik_nonempty_function.R")
 source("MCMC/normalize_weights.R")
 
 

@@ -18,11 +18,8 @@ i_cl2 = sample(which(vi == 2), 1)
 prob_1 = graph_probs[,,i_cl1]
 prob_2 = graph_probs[,,i_cl2]
 
-X = read.csv("data/data.csv")
+X = read.csv("data/breast_cancer.csv")
 
-ncol(X)
-X = X[,-1]
-X = X[, c(3,2,1,4:21)]
 colnames(X)
 
 new_names = unname(sapply(colnames(X), function(x) gsub("_", " ", x)))

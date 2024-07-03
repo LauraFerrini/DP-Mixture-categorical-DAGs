@@ -4,7 +4,7 @@ library(abind)
 library(plyr)
 library(prodlim)
 
-Gibbs_collapsed_ORACLE <- function(Y, S, burn_in, a_pi, b_pi, ne, a, xi) {
+Gibbs_collapsed_ORACLE <- function(Y, S, burn_in, a_pi, b_pi, ne, a, xi, A_constr = NULL) {
   
   ###############
   #### INPUT ####
@@ -46,6 +46,12 @@ Gibbs_collapsed_ORACLE <- function(Y, S, burn_in, a_pi, b_pi, ne, a, xi) {
   n_base    = S
   burn_base = burn_in
   
+  if(is.null(A_constr)){
+    
+    A_constr = matrix(0, q, q)
+    
+  }
+  
   #0. Get draws from the baseline of the Dags
   
   #out_baseline = sample_baseline_dags(S = n_base, burn = burn_base, 
@@ -81,65 +87,6 @@ Gibbs_collapsed_ORACLE <- function(Y, S, burn_in, a_pi, b_pi, ne, a, xi) {
   
   for (t in 2:S){
     
-    #Dag_star   = out_baseline[,,sample(n_base - burn_base, 1)]
-    #Dags  = abind(Dags, Dag_star)
-    
-    #K_star = dim(Dags)[3] # there will always be one empty cluster, which is the last one
-    # sampled from the baseline of the dags 
-    
-    #logProbs = matrix(nrow = n, ncol = K_star) 
-    
-    # I.cal da inserire come argomento anche in funzione per la predictive
-    
-    #for(k in 1:(K_star - 1)){
-      
-      #Nk = plyr::count(Y[xi == k,])
-      
-     # fa.k.list = lapply(1:q, function(j) fa(j, Dags[,,k]))
-     # pa.k.list = lapply(1:q, function(j) pa(j, Dags[,,k]))
-      
-     # Nk.list.fa = lapply(1:q, function(j) aggregate(Nk$freq, by = as.list(Nk[fa.k.list[[j]]]), FUN = sum))
-      
-     # set_pa = which(lapply(1:q, function(j) length(pa.k.list[[j]])) > 0)
-      
-    #  Nk.list.pa = vector("list", length = q) # anche al di fuori di tutto il codice; lo sovrascriviamo ogni volta
-    #  Nk.list.pa[set_pa] = lapply(set_pa, function(j) aggregate(Nk$freq, by = as.list(Nk[pa.k.list[[j]]]), FUN = sum))
-      
-   #   logProbs[,k] = sapply(1:n, function(i) prob_ik_nonempty(N = Nk, N.fa.list = Nk.list.fa, N.pa.list = Nk.list.pa, pa.list = pa.k.list, fa.list = fa.k.list, member = (xi[i] == k), yi = Y[i,]))
-      
-   # }
-    
-   # logProbs[, K_star] = log(alpha_0/I.size)
-    
-   # Probs = t(sapply(1:nrow(logProbs), function(i) normalize_weights(logProbs[i,])))
-    
-   # xi_star = sapply(1:n, function(i) sample(1:(K_star), size = 1, prob = Probs[i,]))
-   
-    
-   # labs = as.integer(names(table(xi_star)))
-    #K_star = length(labs) # effective new number of clusters
-    
-    #Dags  = array(Dags[,,labs], c(q, q, K_star))
-    
-   # xi_star = as.factor(xi_star); levels(xi_star) = 1:K_star   # update labels
-    
-
-     # number of non-empty clusters after having assigned each obs to a cluster 
-    
-    
-    ###############################
-    ## Update of alpha_0 given K ##
-    ###############################
-    
-    #eta = rbeta(1, alpha_0 + 1, n)
-    
-    #alpha_0 = c(rgamma(1, shape = a_alpha + K, 
-                       #rate = b_alpha - log(eta)), 
-               # rgamma(1, shape = a_alpha + K - 1, 
-                      # rate = b_alpha - log(eta)))[sample(c(1,2), 1, prob = c(a_alpha + K - 1, n*(b_alpha - log(eta))))]
-    
-    #alpha_0_chain[t] = alpha_0
-    
     
     ################################
     ## Update DAGs D_1, ..., D_K  ##
@@ -155,7 +102,7 @@ Gibbs_collapsed_ORACLE <- function(Y, S, burn_in, a_pi, b_pi, ne, a, xi) {
     for (k in set){
       
       Dag = Dags[,,k]
-      Dag_move = move(A = Dag, q = q, ne = ne)
+      Dag_move = move(A = Dag, q = q, ne = ne, A_constr = A_constr)
       
       Dag_star      = Dag_move$A_new           # adjacency matrix of the proposed DAG
       nodes_star    = Dag_move$nodes           # nodes (u,v) involved in the local move leading to Dag_star

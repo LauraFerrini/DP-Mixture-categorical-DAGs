@@ -34,6 +34,7 @@ out_mcmc = Gibbs_collapsed(Y = X, S = S, burn_in = burn_in, a_pi = a_pi,
                            b_alpha = b_alpha, A_constr = A_constr)
 t1 = proc.time() - t0
 
+out_mcmc$DAG
 # the output of the mcmc algorithm has been stored in the file "out_breastcancer1.RData"
 
 save(out_mcmc, file = "data/out_breastcancer1.RData")
