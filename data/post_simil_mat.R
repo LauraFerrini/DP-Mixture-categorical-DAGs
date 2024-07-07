@@ -1,6 +1,8 @@
-######################
+#########################################################################################
 # Posterior similarity Matrix with individuals ordered accordingly to estimated point 
 # clustering structure, obtained via Variation of Information criterion
+#########################################################################################
+
 library(mcclust.ext)
 library(fields)
 
@@ -35,7 +37,6 @@ abline(v = 1.0025)
 abline(h = -0.002)
 abline(v = -0.002)
 dev.off()
-
 
 
 
