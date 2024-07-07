@@ -9,11 +9,11 @@ rm(list = ls())
 q = 10
 w = 3/(2*q)
 
-alpha = 0.4
+### alpha = 0.2
+# n_k = 100
+alpha = 0.2
 
 n_k = 100
-#n_k = 200
-#n_k = 500
 
 S    = 12000
 burn = 2000
@@ -36,6 +36,38 @@ time = proc.time() - tm
 filesaved = paste0("simulations/q", q, "_nk", n_k, "_alpha", alpha*100,".RData")
 save.image(file = filesaved)
 
+#n_k = 200
+n_k = 200
+out  = source("simulations/parallel_sim.R")
+filesaved = paste0("simulations/q", q, "_nk", n_k, "_alpha", alpha*100,".RData")
+save.image(file = filesaved)
+
+#n_k = 500
+
+n_k = 200
+out  = source("simulations/parallel_sim.R")
+filesaved = paste0("simulations/q", q, "_nk", n_k, "_alpha", alpha*100,".RData")
+save.image(file = filesaved)
+
+## alpha = 0.4
+alpha = 0.4
+#n_k = 100
+n_k = 100
+out  = source("simulations/parallel_sim.R")
+filesaved = paste0("simulations/q", q, "_nk", n_k, "_alpha", alpha*100,".RData")
+save.image(file = filesaved)
+
+#n_k = 200
+n_k = 200
+out  = source("simulations/parallel_sim.R")
+filesaved = paste0("simulations/q", q, "_nk", n_k, "_alpha", alpha*100,".RData")
+save.image(file = filesaved)
+
+#n_k = 500
+n_k = 500
+out  = source("simulations/parallel_sim.R")
+filesaved = paste0("simulations/q", q, "_nk", n_k, "_alpha", alpha*100,".RData")
+save.image(file = filesaved)
 
 ##################################################
 #### this can be deleted ????????
