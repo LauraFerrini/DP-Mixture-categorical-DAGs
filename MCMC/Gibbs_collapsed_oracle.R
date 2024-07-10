@@ -102,7 +102,7 @@ Gibbs_collapsed_ORACLE <- function(Y, S, burn_in, a_pi, b_pi, ne, a, xi, A_const
     for (k in set){
       
       Dag = Dags[,,k]
-      Dag_move = move(A = Dag, q = q, ne = ne, A_constr = A_constr)
+      Dag_move = move(A = Dag, q = q, A_constr = A_constr)
       
       Dag_star      = Dag_move$A_new           # adjacency matrix of the proposed DAG
       nodes_star    = Dag_move$nodes           # nodes (u,v) involved in the local move leading to Dag_star
