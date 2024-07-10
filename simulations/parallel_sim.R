@@ -30,7 +30,7 @@ out = parLapply(clus, 1:N, function(l){
   dag_2 = (t(as(randomDAG(n = q, prob = w), "matrix")) != 0)*1
   Y2_data = gen_data_from_dag(l+1, n_k, dag_2, alpha = alpha)
   
-  Y_data  = list(Y1_data = Y1_data, Y2_data = Y2_data)
+  Y_data  = list(Y1_data = Y1_data, Y2_data = Y2_data, dag_1 = dag_1, dag_2 = dag_2)
   
   Y1 = Y1_data$Y
   Y2 = Y2_data$Y
