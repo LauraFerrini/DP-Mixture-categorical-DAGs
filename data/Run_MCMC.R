@@ -2,7 +2,7 @@ library(ggplot2)
 library(ggmosaic)
 library(dplyr)
 
-source("MCMC/GIBBS_collapsed_rcpp.R")
+source("MCMC/GIBBS_joint_rcpp.R")
 
 X = read.csv("data/breast_cancer.csv")
 head(X)
@@ -14,8 +14,8 @@ A_constr = matrix(0,q,q)
 A_constr[1,] = NA
 A_constr[,2] = NA
 
-S = 100000
-burn_in = 10000
+S = 1000
+burn_in = 100
 # pi ~ Beta(a_pi, b_pi)
 a_pi = 1
 b_pi = 2*q
@@ -29,7 +29,7 @@ X = as.matrix(X)
 t0 = proc.time()
 
 set.seed(1234)
-out_mcmc = Gibbs_collapsed(Y = X, S = S, burn_in = burn_in, a_pi = a_pi,
+out_mcmc = Gibbs_joint(Y = X, S = S, burn_in = burn_in, a_pi = a_pi,
                            b_pi = b_pi, a_alpha = a_alpha, a = a,
                            b_alpha = b_alpha, A_constr = A_constr)
 t1 = proc.time() - t0

@@ -1,14 +1,15 @@
-source("data/collapsed sampler - constrained/sample_from_baseline_constrained.R")
-source("data/collapsed sampler - constrained/prob_ik_nonempty_function_new_rcpp.R")
-source("data/collapsed sampler - constrained/marg_dag.R")
-source("data/collapsed sampler - constrained/normalize_weights.R")
+source("MCMC/sample_from_baseline.R")
+source("MCMC/prob_ik_nonempty_function.R")
+source("MCMC/marg_dag.R")
+source("MCMC/normalize_weights.R")
 
 
 library(abind)
 library(plyr)
 library(prodlim)
 
-Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_constr = NULL) {
+
+Gibbs_joint <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_constr = NULL) {
   
   ###############
   #### INPUT ####
@@ -66,7 +67,7 @@ Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_co
   
   K_inits = 2    ## number of clusters
   
-  alpha_0 = 0.5 ## precision parameter
+  alpha_0 = 0.5  ## precision parameter
   alpha_0_chain[[1]] = alpha_0
   
   ## DAGs D_1, ..., D_K (empty)
@@ -116,7 +117,7 @@ Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_co
       fa.k.list = lapply(1:q, function(j) fa(j, Dags[,,k]))
       pa.k.list = lapply(1:q, function(j) pa(j, Dags[,,k]))
       
-     
+      
       logProbs[,k] = sapply(1:n, function(i) prob_ik_nonempty(Y = Y[xi == k,, drop = FALSE], pa.list = pa.k.list, fa.list = fa.k.list, 
                                                               member = (xi[i] == k),
                                                               yi = Y[i,], a = a, I.cal = I.cal)) 
@@ -240,6 +241,22 @@ Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_co
   ################################
   #### End of MCMC iterations ####
   ################################
+  
+  
+  ########################
+  ##### Sample theta #####
+  ########################
+  
+  source("MCMC/theta_function.R")
+  
+  out_theta = sample_theta(burn_in, S, xi = Xi_chain, DAG_chain = A_chain, X = Y, q, seed = 123) 
+  
+  
+  ###############################
+  ##### Posterior summaries #####
+  ###############################
+  
+  
   # similarity matrix
   # posterior prob of edge inclusion 
   
@@ -264,9 +281,8 @@ Gibbs_collapsed <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_co
     
   }
   
-  return(list(DAG = A_chain, Xi = Xi_chain, alpha_0 = alpha_0_chain,
+  return(list(DAG = A_chain, Xi = Xi_chain, alpha_0 = alpha_0_chain, theta_chain = out_theta,
               simil_mat = simil_probs, graph_probs = graph_probs))
   
   
 }
-

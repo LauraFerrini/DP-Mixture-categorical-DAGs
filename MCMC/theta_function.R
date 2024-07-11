@@ -1,7 +1,9 @@
 # insert lines for downloading new version of bnlearn 
 library(devtools)
 install_github("mldv/bnlearn")
-theta_chain <- function(burn_in, S, out_mcmc, X, q, seed) {
+library(bnlearn)
+
+sample_theta <- function(burn_in, S, xi, DAG_chain, X, q, seed) {
   
   Theta_chain = vector(mode = "list", length = S - burn_in)
   bn.tmp = empty.graph(as.character(paste0("X",1:q)))
@@ -10,14 +12,13 @@ theta_chain <- function(burn_in, S, out_mcmc, X, q, seed) {
   for(s in (burn_in + 1):S){
     
     Theta = list()
-    xi    = out_mcmc$Xi[,s]
     
     set.seed(seed)
     
     for(k in unique(xi)){
       
       Xk = X[xi == k, TRUE]
-      Dk = out_mcmc$DAG[[s]][,,k]
+      Dk = DAG_chain[[s]][,,k]
       
       colnames(Dk) = rownames(Dk) = as.character(paste0("X",1:q))
       amat(bn.tmp) = Dk
