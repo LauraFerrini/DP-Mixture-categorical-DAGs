@@ -17,7 +17,7 @@ burn = 2000
 N = 40  # number of replications
 
 #maxcore = min(detectCores(), N)
-maxcore = 10
+maxcore = 20
 
 ################################################
 ###### SCENARIO 1: alpha = 0.2, n_k = 100 ######
@@ -65,7 +65,7 @@ filesaved = paste0("simulations/q", q, "_nk", n_k, "_alpha", alpha*100,".RData")
 save.image(file = filesaved)
 
 ################################################
-###### SCENARIO 4: alpha = 0.4, n_k = 500 ######
+###### SCENARIO 6: alpha = 0.4, n_k = 500 ######
 ################################################
 n_k = 500
 out  = source("simulations/parallel_sim.R")
