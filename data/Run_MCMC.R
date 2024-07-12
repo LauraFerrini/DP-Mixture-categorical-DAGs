@@ -38,7 +38,163 @@ out_mcmc$DAG
 # the output of the mcmc algorithm has been stored in the file "out_breastcancer1.RData"
 
 save(out_mcmc, file = "data/out_breastcancer1.RData")
-## Recover posterior distribution of DAG parameters (and so causal effects) with the file ""
+
+## recover posterior distribution of causal effects of interest 
+
+
+######################################
+############# PLOTS ##################
+######################################
+
+load("data/out_breastcancer1.RData")
+
+###################################
+### Posterior Similarity matrix ###
+###################################
+
+library(mcclust.ext)
+library(fields)
+
+vi = minVI(out_mcmc$simil_mat)$cl
+table(vi)
+
+ordered_ind1_vi = unlist(sapply(1:length(table(vi)),
+                                function(k) c(which(vi == k))))
+simil_ordered1_vi = out_mcmc$simil_mat[ordered_ind1_vi,ordered_ind1_vi]
+
+n = length(vi)
+grid_labs = c(1, round(n/4), n/2, round(3*n/4), n)
+pos_labs  = grid_labs/n; pos_labs[1] = 0
+
+pdf(file = "psm_breastcancer_def.pdf",   # The directory you want to save the file in
+    width = 8, # The width of the plot in inches
+    height = 7.4) # The height of the plot in inches
+colori = colorRampPalette(c('white','black'))
+par(mar = c(5,5,1,1), oma = c(0.5,0.5,0.5,0.5), cex = 1, mgp = c(3.5,1,0), mfrow = c(1,1), mai = c(1,1,0.5,0.5))
+image.plot(simil_ordered1_vi, col = colori(100), zlim = c(0,1), cex.sub = 1,
+           xlab = "subjects (i)", ylab = "subjects (i')", 
+           axes = F, horizontal = F, legend.shrink = 1, border = "black", lwd = 2)
+axis(1, at = pos_labs, lab = grid_labs, las = 2)
+axis(2, at = pos_labs, lab = grid_labs, las = 2)
+abline(h = 1.0025)
+abline(v = 1.0025)
+abline(h = -0.002)
+abline(v = -0.002)
+dev.off()
+
+
+###################################
+######### Individual PPI ##########
+###################################
+
+graph_probs = out_mcmc$graph_probs
+vi    =  minVI(out_mcmc$simil_mat)$cl
+
+# draw at random 2 individuals
+set.seed(1234)
+i_cl1 = sample(which(vi == 1), 1)
+set.seed(5678)
+i_cl2 = sample(which(vi == 2), 1)
+
+prob_1 = graph_probs[,,i_cl1]
+prob_2 = graph_probs[,,i_cl2]
+
+X = read.csv("data/breast_cancer.csv")
+colnames(X)
+new_names = unname(sapply(colnames(X), function(x) gsub("_", " ", x)))
+colnames(X) = new_names
+n = nrow(X)
+q = ncol(X)
+
+rownames(prob_1) = colnames(prob_1) = colnames(X)
+colnames(prob_2) = rownames(prob_2) = colnames(X)
+
+
+colori = colorRampPalette(c('white','black'))
+pdf(file = "data/PPI_cl1.pdf",   # The directory you want to save the file in
+    width = 9, # The width of the plot in inches
+    height = 7.2) # The height of the plot in inches
+par(oma = c(3,3,1,1.5), mar = c(5,4,0.3,1), mai = c(1,1,0.1,1))
+image.plot(t(prob_1), col = colori(100), zlim = c(0,1), cex.sub = 1.5, xlab = "", 
+           axes = F, horizontal = F, legend.shrink = 1)
+axis(1, at = seq(0, 1, l = q), lab = colnames(X), las = 2, srt = 20, cex = 1, cex.axis = 1)
+axis(2, at = seq(0, 1, l = q), lab = colnames(X), las = 2, srt = 35, cex = 1, cex.axis = 1)
+abline(h = 1.030)
+abline(v = 1.030)
+abline(h = -0.03)
+abline(v = -0.03)
+dev.off()
+
+pdf(file = "data/PPI_cl2.pdf",   # The directory you want to save the file in
+    width = 9, # The width of the plot in inches
+    height = 7.2) # The height of the plot in inches
+par(oma = c(3,3,1,1.5), mar = c(5,4,0.3,1), mai = c(1,1,0.1,1))
+image.plot(t(prob_2), col = colori(100), zlim = c(0,1), cex.sub = 1, xlab = "", axes = F, horizontal = F, legend.shrink = 1)
+axis(1, at = seq(0, 1, l = q), lab = colnames(X), las = 2, srt = 35, cex = 1.2, cex.axis = 1)
+axis(2, at = seq(0, 1, l = q), lab = colnames(X), las = 2, srt = 35, cex = 1.2, cex.axis = 1)
+abline(h = 1.030)
+abline(v = 1.030)
+abline(h = -0.03)
+abline(v = -0.03)
+dev.off()
+
+####################################
+########## Spider Plots ############
+####################################
+library(mcclust.ext)
+library(ggplot2)
+library(scales)
+library(ggradar)
+library(dplyr)
+
+X = read.csv("data/breast_cancer.csv")
+#A = matrix(unlist(lapply(1:ncol(X), function(j) as.factor(X[,j]))), nrow = nrow(X), ncol=ncol(X), byrow = F)
+#head(A);head(X)
+#colnames(A) = colnames(X)
+X[] <- lapply(X, factor)
+str(X)
+X_dummy = model.matrix(~., data = X)
+X_dummy = X_dummy[,-1]
+
+fun_for_names <- function(my_string) {
+  my_string = gsub("_", " ", my_string)
+  if (substr(my_string, nchar(my_string), nchar(my_string)) == "1") {
+    # Drop the last character
+    my_string <- substr(my_string, 1, nchar(my_string) - 1)
+  }
+  return(my_string)
+}
+
+new_names = unname(sapply(colnames(X_dummy), function (x) fun_for_names(x)))
+colnames(X_dummy) = new_names
+
+prop = apply(X_dummy, 2, mean)
+prop = as.data.frame(t(prop))
+dim(prop)
+
+vi      =  minVI(out_mcmc$simil_mat)$cl
+sum(vi==1)
+
+X_cl1 = X_dummy[which(vi==1), ]
+X_cl2 = X_dummy[which(vi==2), ]
+dev.off()
+prop_all = rbind(prop, apply(X_cl1, 2, mean), apply(X_cl2, 2, mean))
+prop_all = cbind(data = c("pooled", "cluster 1", "cluster 2"), prop_all)
+
+pdf('spider_cl1.pdf', pointsize=10, width=9, height=9)
+p = prop_all[1:2, ] %>%
+  ggradar(group.line.width = 1,
+          group.point.size = 1.5, group.colours = c("#1b9e77", "grey")) +
+  theme(legend.position = "bottom", legend.title = element_text(size = 17))
+p
+dev.off()
+pdf('spider_cl2.pdf', pointsize=10, width=9, height=9)
+prop_all[c(1,3), ] %>%
+  ggradar(group.line.width = 1,
+          group.point.size = 1.5,  group.colours = c("#d95f02", "grey")) +
+  theme(legend.position = "bottom", legend.title = element_text(size = 17))
+dev.off()
+
 
 
 
