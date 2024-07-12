@@ -3,6 +3,8 @@ library("parallel")
 library(tidyr)
 library(ggplot2)
 library(mcclust.ext)
+library(pcalg)
+library(abind)
 rm(list = ls())
 
 # memory.size(500000)
@@ -93,6 +95,7 @@ Vi = function(simil_mat, xi_true, n_k, method){
 
 load("simulations/q10_nk100_alpha20.RData")
 out = out$value
+xi = out[[1]]$xi_true
 
 vi_1_dags    = sapply(1:N, function(i) Vi(out[[i]]$out_simil_dag, xi, n_k, "bnp") )
 vi_1_no_dags = sapply(1:N, function(i) Vi(out[[i]]$out_simil_nodag, xi, n_k, "bnp") )
@@ -106,6 +109,7 @@ vi_1_kmodes = sapply(1:N, function(i) Vi(out[[i]]$out_kmodes, xi, n_k, "kmodes")
 
 load("simulations/q10_nk200_alpha20.RData")
 out = out$value
+xi = out[[1]]$xi_true
 
 vi_2_dags    = sapply(1:N, function(i) Vi(out[[i]]$out_simil_dag, xi, n_k, "bnp") )
 vi_2_no_dags = sapply(1:N, function(i) Vi(out[[i]]$out_simil_nodag, xi, n_k, "bnp") )
@@ -117,6 +121,7 @@ vi_2_kmodes  = sapply(1:N, function(i) Vi(out[[i]]$out_kmodes, xi, n_k, "kmodes"
 ################################################
 load("simulations/q10_nk500_alpha20.RData")
 out = out$value
+xi = out[[1]]$xi_true
 
 vi_3_dags    = sapply(1:N, function(i) Vi(out[[i]]$out_simil_dag, xi, n_k, "bnp") )
 vi_3_no_dags = sapply(1:N, function(i) Vi(out[[i]]$out_simil_nodag, xi, n_k, "bnp") )
@@ -128,6 +133,7 @@ vi_3_kmodes  = sapply(1:N, function(i) Vi(out[[i]]$out_kmodes, xi, n_k, "kmodes"
 ################################################
 load("simulations/q10_nk100_alpha40.RData")
 out = out$value
+xi = out[[1]]$xi_true
 
 vi_4_dags    = sapply(1:N, function(i) Vi(out[[i]]$out_simil_dag, xi, n_k, "bnp") )
 vi_4_no_dags = sapply(1:N, function(i) Vi(out[[i]]$out_simil_nodag, xi, n_k, "bnp") )
@@ -140,6 +146,7 @@ vi_4_kmodes  = sapply(1:N, function(i) Vi(out[[i]]$out_kmodes, xi, n_k, "kmodes"
 
 load("simulations/q10_nk200_alpha40.RData")
 out = out$value
+xi = out[[1]]$xi_true
 
 vi_5_dags    = sapply(1:N, function(i) Vi(out[[i]]$out_simil_dag, xi, n_k, "bnp") )
 vi_5_no_dags = sapply(1:N, function(i) Vi(out[[i]]$out_simil_nodag, xi, n_k, "bnp") )
@@ -151,6 +158,7 @@ vi_5_kmodes  = sapply(1:N, function(i) Vi(out[[i]]$out_kmodes, xi, n_k, "kmodes"
 ################################################
 load("simulations/q10_nk500_alpha40.RData")
 out = out$value
+xi = out[[1]]$xi_true
 
 vi_6_dags    = sapply(1:N, function(i) Vi(out[[i]]$out_simil_dag, xi, n_k, "bnp") )
 vi_6_no_dags = sapply(1:N, function(i) Vi(out[[i]]$out_simil_nodag, xi, n_k, "bnp") )
@@ -303,14 +311,17 @@ shd_mean_function <- function(n_k, N, out, q, xi) {
 ################################################
 load("simulations/q10_nk100_alpha20.RData")
 out = out$value
+xi = out[[1]]$xi_true
 
 shd1_oracle = shd_oracle_fun(N = N, out = out, q = q)
 shd1 = t(shd_mean_function(n_k, N, out, q, xi))
+
 ################################################
 ###### SCENARIO 2: alpha = 0.2, n_k = 200 ######
 ################################################
 load("simulations/q10_nk200_alpha20.RData")
 out = out$value
+xi = out[[1]]$xi_true
 
 shd2_oracle = shd_oracle_fun(N = N, out = out, q = q)
 shd2 = t(shd_mean_function(n_k, N, out, q, xi))
@@ -319,6 +330,7 @@ shd2 = t(shd_mean_function(n_k, N, out, q, xi))
 ################################################
 load("simulations/q10_nk500_alpha20.RData")
 out = out$value
+xi = out[[1]]$xi_true
 
 shd3_oracle = shd_oracle_fun(N = N, out = out, q = q)
 shd3 = t(shd_mean_function(n_k, N, out, q, xi))
@@ -328,6 +340,7 @@ shd3 = t(shd_mean_function(n_k, N, out, q, xi))
 ################################################
 load("simulations/q10_nk100_alpha40.RData")
 out = out$value
+xi = out[[1]]$xi_true
 
 shd4_oracle = shd_oracle_fun(N = N, out = out, q = q)
 shd4 = t(shd_mean_function(n_k, N, out, q, xi))
@@ -336,6 +349,7 @@ shd4 = t(shd_mean_function(n_k, N, out, q, xi))
 ################################################
 load("simulations/q10_nk200_alpha40.RData")
 out = out$value
+xi = out[[1]]$xi_true 
 
 shd5_oracle = shd_oracle_fun(N = N, out = out, q = q)
 shd5 = t(shd_mean_function(n_k, N, out, q, xi))
@@ -344,8 +358,8 @@ shd5 = t(shd_mean_function(n_k, N, out, q, xi))
 ###### SCENARIO 6: alpha = 0.4, n_k = 500 ######
 ################################################
 load("simulations/q10_nk500_alpha40.RData")
-
 out = out$value
+xi = out[[1]]$xi_true
 
 shd6_oracle = shd_oracle_fun(N = N, out = out, q = q)
 shd6 = t(shd_mean_function(n_k, N, out, q, xi))
