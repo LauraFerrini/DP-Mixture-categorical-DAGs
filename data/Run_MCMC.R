@@ -14,8 +14,8 @@ A_constr = matrix(0,q,q)
 A_constr[1,] = NA
 A_constr[,2] = NA
 
-S = 1000
-burn_in = 100
+S = 100000
+burn_in = 10000
 # pi ~ Beta(a_pi, b_pi)
 a_pi = 1
 b_pi = 2*q

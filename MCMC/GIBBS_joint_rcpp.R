@@ -249,7 +249,7 @@ Gibbs_joint <- function(Y, S, burn_in, a_pi, b_pi, a_alpha, b_alpha, a, A_constr
   
   source("MCMC/theta_function.R")
   
-  out_theta = sample_theta(burn_in, S, xi = Xi_chain, DAG_chain = A_chain, X = Y, q, seed = 123) 
+  out_theta = sample_theta(burn_in, S, Xi_chain = Xi_chain, DAG_chain = A_chain, X = Y, q, seed = 123) 
   
   
   ###############################
