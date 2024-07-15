@@ -45,12 +45,12 @@ save(out_mcmc, file = "data/out_breastcancer1.RData")
 ######################################
 ############# PLOTS ##################
 ######################################
-
-load("data/out_breastcancer1.RData")
+#load("data/out_breastcancer1.RData")
 
 ###################################
 ### Posterior Similarity matrix ###
 ###################################
+
 
 library(mcclust.ext)
 library(fields)
@@ -66,7 +66,7 @@ n = length(vi)
 grid_labs = c(1, round(n/4), n/2, round(3*n/4), n)
 pos_labs  = grid_labs/n; pos_labs[1] = 0
 
-pdf(file = "psm_breastcancer_def.pdf",   # The directory you want to save the file in
+pdf(file = "data/psm_breastcancer_def.pdf",   # The directory you want to save the file in
     width = 8, # The width of the plot in inches
     height = 7.4) # The height of the plot in inches
 colori = colorRampPalette(c('white','black'))
@@ -141,7 +141,6 @@ dev.off()
 ####################################
 ########## Spider Plots ############
 ####################################
-library(mcclust.ext)
 library(ggplot2)
 library(scales)
 library(ggradar)
@@ -181,20 +180,53 @@ dev.off()
 prop_all = rbind(prop, apply(X_cl1, 2, mean), apply(X_cl2, 2, mean))
 prop_all = cbind(data = c("pooled", "cluster 1", "cluster 2"), prop_all)
 
-pdf('spider_cl1.pdf', pointsize=10, width=9, height=9)
+pdf('data/spider_cl1.pdf', pointsize=10, width=9, height=9)
 p = prop_all[1:2, ] %>%
   ggradar(group.line.width = 1,
           group.point.size = 1.5, group.colours = c("#1b9e77", "grey")) +
   theme(legend.position = "bottom", legend.title = element_text(size = 17))
 p
 dev.off()
-pdf('spider_cl2.pdf', pointsize=10, width=9, height=9)
+pdf('data/spider_cl2.pdf', pointsize=10, width=9, height=9)
 prop_all[c(1,3), ] %>%
   ggradar(group.line.width = 1,
           group.point.size = 1.5,  group.colours = c("#d95f02", "grey")) +
   theme(legend.position = "bottom", legend.title = element_text(size = 17))
 dev.off()
 
+#################################################
+############## Causal effects ###################
+#################################################
+
+## Retrieve the causal effects of interest 
+source("MCMC/gamma_causal.R")
+
+
+set.seed(123)
+res_ACprev = individual_causal(n = nrow(X), S = 100000, burnin = 10000, 
+                               Xi_chain = out_mcmc$Xi[,10001:100000],
+                               out_mcmc$theta_chain, y = "X1", v = "X13", v_k = 1, v_h = 0)
+set.seed(123)
+res_AC = individual_causal(n = nrow(X), S = 100000, burnin = 10000,
+                           out_mcmc$Xi[,10001:100000],
+                           out_mcmc$theta_chain, y = "X1", v = "X6", v_k = 1, v_h = 0)
+set.seed(123)
+res_antiHER2= individual_causal(n = nrow(X), S = 100000, burnin = 10000, 
+                                out_mcmc$Xi[,10001:100000],
+                                out_mcmc$theta_chain, y = "X1", v = "X7", v_k = 1, v_h = 0)
+
+out_causal = list(res_ACprev, res_AC, res_antiHER2)
+save(out_causal, file ="/Users/laura/Desktop/2024 - clustering categorical models/results github/out_causal.RData")
+
+#################################################################
+## Causal effects if we would have neglected the heterogeneity ##
+#################################################################
+
+####################################
+##### Plots of causal effects ######
+####################################
+
+post_means = lapply(out_causal, function(i) rowMeans(i))
 
 
 
