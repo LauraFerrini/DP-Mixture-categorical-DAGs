@@ -1,4 +1,0 @@
-- GIBBS_collapsed_rcpp.R -> contains the main mcmc algorithm and uses the functions defined in: "marg_dag.R", "move_dag.R", "normalize_weights.R",
-"prob_ik_nonempty_function_new_rcpp.R", "sample_from_baseline.R"
-- Gibbs_collapsed_nodags.R -> contains the mcmc algorithm in which at each iteration the DAG is empty
-- Gibbs_collapsed_oracle.R -> contains the oracle version of the algorithm, with cluster indicators always given by the true cluster membership 
