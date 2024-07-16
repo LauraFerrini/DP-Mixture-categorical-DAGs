@@ -1,2 +1,0 @@
-- the subfolder: MCMC-constrained contains the MCMC algorithm and the auxiliary functions for cases in which the adjacency matrix of the DAG is constrained
-- the file Run_MCMC runs the algorithm on breast cancer data ("data.csv") and produces the file "out_breastcancer1.RData" that contains the output of the MCMC algorithm
