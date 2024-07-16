@@ -2,7 +2,7 @@
 
 This repository contains the R codes implementing our DP mixture of categorical DAGs.
 
-## Folder MCMC
+## MCMC
 The folder MCMC contains the R codes for the implementation of the main MCMC algorithms for the DP mixture of categorical DAGs.  \\
 In particular: 
   * GIBBS_collapsed_rcpp.R       : contains the main MCMC algorithm for posterior inference
@@ -18,13 +18,13 @@ In particular:
   * theta_function.R             : draws from the posterior of DAG parameters
   * GIBBS_joint_rcpp.R           : contains the collapsed MCMC and retrieves the DAG parameters 
   
-## Folder data
+## Data
 The folder data contains the R codes for the the analysis of cardiac side effects on breast cancer patients. 
 
  * breast_cancer.csv  : contains the data used in the analysis. Original source: 
  * Run_MCMC           : implements the MCMC on breast cancer patients and it produces plots for the analysis on the results
 
-## Folder simulations 
+## Simulations 
 The folder simulations contains all the R codes for the replicability of our simulation study. In particular:
 
   * generate_data.R     : generates the data
