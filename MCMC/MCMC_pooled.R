@@ -15,10 +15,9 @@ mcmc_pooled = function(Y, S, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL){
   # v_set : a set of nodes for which the causal effect of do(Xv = x) on y = 1 is required; if null, all nodes are included
   
   # Required auxiliary functions:
-  library(dpl)
   source("MCMC/move_dag.R")
   source("MCMC/marg_dag.R")
-  source("MCMC/gamma_causal.R")
+  
   
   n = nrow(Y)
   q = ncol(Y)
