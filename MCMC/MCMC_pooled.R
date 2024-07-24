@@ -1,4 +1,4 @@
-mcmc_pooled = function(Y, S, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL){
+mcmc_pooled = function(Y, S, burn_in, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL, joint = FALSE){
   
   # This function implements our main MCMC scheme for joint posterior inference on
   # DAGs, DAG-parameters and causal effects
@@ -30,7 +30,6 @@ mcmc_pooled = function(Y, S, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL){
   
   bn_tmp = empty.graph(as.character(paste0("X",1:q))) # needed to convert adjacency matrices into bn objects
   
-  
   Y = as.data.frame(Y)
   Y[,1:ncol(Y)] = lapply(Y[,1:ncol(Y)], as.factor)
   
@@ -42,15 +41,7 @@ mcmc_pooled = function(Y, S, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL){
   
   # matrix collecting the adjacency matrices of the DAGs
   # (each column is the by-column-vectorized adjacency matrix of the accepted DAG) ??
-  
-  Theta = list()
-  
-  # list collecting draws from the posterior of node-parameters
-  
-  #Out_causal = matrix(NA, S, length(vset))
-  
-  # matrix collecting draws from the posterior of causal effect coefficients
-  
+
   # Inits values
   
   Dag = matrix(0, q, q); colnames(Dag) = rownames(Dag) = 1:q; Dags[,,1] = Dag
@@ -66,6 +57,7 @@ mcmc_pooled = function(Y, S, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL){
   
   # MCMC iterations
   
+  cat("\nSampling DAGs...")
   pb = txtProgressBar(min = 2, max = S, style = 3)
   
   for(t in 1:S){
@@ -131,6 +123,17 @@ mcmc_pooled = function(Y, S, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL){
     
     Dags[,,t] = Dag
     
+    setTxtProgressBar(pb, t)
+    close(pb)
+    
+  }
+  
+  
+  if(joint == TRUE){
+    
+    Theta = list()
+    
+    # list collecting draws from the posterior of node-parameters
     
     ############################################
     ## 2. Sample theta given the accepted DAG ##
@@ -142,28 +145,41 @@ mcmc_pooled = function(Y, S, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL){
     
     ## Sample from the collection of posterior Dirichlet distributions using function bn.fit with method = "bayes-sample"
     
-    colnames(Dag) = rownames(Dag) = as.character(paste0("X",1:q))
+    cat("\nSampling parameters...")
+    pb = txtProgressBar(min = 2, max = S, style = 3)
     
-    amat(bn_tmp) = Dag
+    for(t in (burn_in + 1):S){
     
-    theta = bn.fit(x = bn_tmp, data = Y, keep.fitted = TRUE, debug = FALSE, method = "bayes-sample")
-    
-    Theta[[t]] = theta
-    
-    
-    ###############################
-    ## 3. Compute causal effects ##
-    ###############################
-    
-    
-    #Out_causal[t,] = c(sapply(vset, function(vv) gammav(theta, y = "X1", v = sprintf("X%s", vv))))
-    
-    #setTxtProgressBar(pb, t)
-    #close(pb)
+      Dag = Dags[,,t]
+        
+      colnames(Dag) = rownames(Dag) = as.character(paste0("X",1:q))
+      
+      amat(bn_tmp) = Dag
+      
+      theta = bn.fit(x = bn_tmp, data = Y, keep.fitted = TRUE, debug = FALSE, method = "bayes-sample")
+      
+      Theta[[t]] = theta
+      
+      setTxtProgressBar(pb, t)
+      close(pb)
+      
+    }
     
   }
   
-  return(out = list(Y = Y, Dags = Dags, Theta = Theta))
+  if(joint == TRUE){
+    
+    return(out = list(Y = Y, Dags = Dags, Theta = Theta))
+    
+  }
+  
+  if(joint == FALSE){
+    
+    PPI = apply(X = Dags[,,(burn_in + 1):S], MARGIN = c(1,2), FUN = mean)
+    
+    return(out = list(Y = Y, Dags = Dags[,,(burn_in+1):S], PPI = PPI))
+    
+  }
   
 }
 

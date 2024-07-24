@@ -77,7 +77,14 @@ out = parLapply(clus, 1:N, function(l){
   out_probs_dag_oracle = out_oracle$graph_probs
   
   
-  ## Method 3: No dags -> the update of dags is replaced by proposing always an empty dag 
+  ## Method 3: Pooled -> only for structure learning
+  source("MCMC/MCMC_pooled.R")
+  
+  set.seed(123)
+  out_probs_dag_pooled = mcmc_pooled(Y, S, burn_in = burn, a = a, a_pi = a_pi,
+                                     b_pi = b_pi)$PPI
+  
+  ## Method 4: No dags -> the update of dags is replaced by proposing always an empty dag 
   
   source("MCMC/Gibbs_collapsed_nodags.R")
   
@@ -89,13 +96,13 @@ out = parLapply(clus, 1:N, function(l){
   out_simil_nodag = out_mcmc_nodags$simil_mat
   
   
-  ## Method 4: K Modes
+  ## Method 5: K Modes
   
   set.seed(123)
   out_kmodes = kmodes(Y, 2)
   
   
-  ## Method 5: Latent class model
+  ## Method 6: Latent class model
   
   Y_polca = data.frame(Y + 1)
   set.seed(123)
@@ -107,6 +114,7 @@ out = parLapply(clus, 1:N, function(l){
                     out_simil_dag = out_simil_dag,
                     out_probs_dag = out_probs_dag,
                     out_probs_dag_oracle = out_probs_dag_oracle,
+                    out_probs_dag_pooled  = out_probs_dag_pooled,
                     out_simil_nodag      = out_simil_nodag,
                     out_kmodes = out_kmodes$cluster,
                     out_polca = out_polca$predclass
