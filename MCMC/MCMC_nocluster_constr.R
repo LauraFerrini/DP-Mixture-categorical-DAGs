@@ -15,7 +15,7 @@ mcmc_pooled = function(Y, S, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL){
   # v_set : a set of nodes for which the causal effect of do(Xv = x) on y = 1 is required; if null, all nodes are included
   
   # Required auxiliary functions:
-  
+  library(dpl)
   source("MCMC/move_dag.R")
   source("MCMC/marg_dag.R")
   source("MCMC/gamma_causal.R")
@@ -31,14 +31,11 @@ mcmc_pooled = function(Y, S, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL){
   
   bn_tmp = empty.graph(as.character(paste0("X",1:q))) # needed to convert adjacency matrices into bn objects
   
-  Y_labs = Y
   
+  Y = as.data.frame(Y)
   Y[,1:ncol(Y)] = lapply(Y[,1:ncol(Y)], as.factor)
-  Y_labs[,1:ncol(Y_labs)] = lapply(Y_labs[,1:ncol(Y_labs)], as.factor)
   
-  colnames(Y_labs) = as.character(paste0("X",1:q))
-  
-  colnames(Y) = 1:q
+  colnames(Y) = as.character(paste0("X",1:q))
   
   # Store space for parameters
   
@@ -150,7 +147,7 @@ mcmc_pooled = function(Y, S, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL){
     
     amat(bn_tmp) = Dag
     
-    theta = bn.fit(x = bn_tmp, data = Y_labs, keep.fitted = TRUE, debug = FALSE, method = "bayes-sample")
+    theta = bn.fit(x = bn_tmp, data = Y, keep.fitted = TRUE, debug = FALSE, method = "bayes-sample")
     
     Theta[[t]] = theta
     
