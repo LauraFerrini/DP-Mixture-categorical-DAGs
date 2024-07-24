@@ -51,7 +51,7 @@ mcmc_pooled = function(Y, S, a, a_pi, b_pi, verbose = FALSE, A_constr = NULL){
   
   # list collecting draws from the posterior of node-parameters
   
-  Out_causal = matrix(NA, S, length(vset))
+  #Out_causal = matrix(NA, S, length(vset))
   
   # matrix collecting draws from the posterior of causal effect coefficients
   
