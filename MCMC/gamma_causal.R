@@ -46,17 +46,18 @@ gammav = function(theta, y, v, v_k, v_h) {
 }
 
 
-individual_causal <- function(n, S, burnin, Xi_chain, Theta_chain, y, v, v_k, v_h) {
+individual_causal <- function(n, Xi_chain, Theta_chain, y, v, v_k, v_h) {
   
-  res_causal = matrix(nrow = n, ncol= (S-burnin))
-  r = 1
-  for (s in (burnin + 1):S){
+  S = dim(Xi_chain)[2]
+  
+  res_causal = matrix(nrow = n, ncol = S)
+  
+  for (s in 1:S){
     
     xis = Xi_chain[,s]
     causal = sapply(1:length(unique(xis)), function(k) gammav(Theta_chain[[s]][k][[1]],
                                                               y = y, v = v, v_k = v_k, v_h = v_h) )
-    res_causal[,r] = causal[xis]
-    r = r + 1
+    res_causal[,s] = causal[xis]
     
     if(s%%100 == 0){print(s)}
     

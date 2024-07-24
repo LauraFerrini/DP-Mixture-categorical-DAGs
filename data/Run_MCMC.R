@@ -86,16 +86,17 @@ dev.off()
 ###################################
 ######### Individual PPI ##########
 ###################################
-
+library(fields)
 graph_probs = out_mcmc$graph_probs
 vi    =  minVI(out_mcmc$simil_mat)$cl
 
-# draw at random 2 individuals
-set.seed(1234)
-i_cl1 = sample(which(vi == 1), 1)
-set.seed(5678)
-i_cl2 = sample(which(vi == 2), 1)
-
+# find the two individuals with the smallest posterior probability of being assigned
+# to the same clusters 
+idx = which(out_mcmc$simil_mat == min(out_mcmc$simil_mat), arr.ind = TRUE)
+set.seed(123)
+idx = idx[sample(1:nrow(idx), 1), ]
+i_cl1 = unname(idx[which(vi[idx]==1)])
+i_cl2 = unname(idx[which(vi[idx]==2)])
 prob_1 = graph_probs[,,i_cl1]
 prob_2 = graph_probs[,,i_cl2]
 
@@ -147,9 +148,7 @@ library(ggradar)
 library(dplyr)
 
 X = read.csv("data/breast_cancer.csv")
-#A = matrix(unlist(lapply(1:ncol(X), function(j) as.factor(X[,j]))), nrow = nrow(X), ncol=ncol(X), byrow = F)
-#head(A);head(X)
-#colnames(A) = colnames(X)
+
 X[] <- lapply(X, factor)
 str(X)
 X_dummy = model.matrix(~., data = X)
@@ -201,35 +200,90 @@ dev.off()
 ## Retrieve the causal effects of interest 
 source("MCMC/gamma_causal.R")
 
+Xi_burned = out_mcmc$Xi[,(burn_in+1):S]
 
 set.seed(123)
-res_ACprev = individual_causal(n = nrow(X), S = 100000, burnin = 10000, 
-                               Xi_chain = out_mcmc$Xi[,10001:100000],
+res_ACprev = individual_causal(n = nrow(X), 
+                               Xi_chain = Xi_burned,
                                out_mcmc$theta_chain, y = "X1", v = "X13", v_k = 1, v_h = 0)
 set.seed(123)
-res_AC = individual_causal(n = nrow(X), S = 100000, burnin = 10000,
-                           out_mcmc$Xi[,10001:100000],
+res_AC = individual_causal(n = nrow(X),
+                           Xi_chain = Xi_burned,
                            out_mcmc$theta_chain, y = "X1", v = "X6", v_k = 1, v_h = 0)
+
 set.seed(123)
-res_antiHER2= individual_causal(n = nrow(X), S = 100000, burnin = 10000, 
-                                out_mcmc$Xi[,10001:100000],
+res_antiHER2= individual_causal(n = nrow(X), 
+                                Xi_chain = Xi_burned,
                                 out_mcmc$theta_chain, y = "X1", v = "X7", v_k = 1, v_h = 0)
 
-out_causal = list(res_ACprev, res_AC, res_antiHER2)
-save(out_causal, file ="/Users/laura/Desktop/2024 - clustering categorical models/results github/out_causal.RData")
+out_causal = list(res_AC, res_antiHER2)
+save(out_causal, file ="out_causal.RData")
 
 #################################################################
 ## Causal effects if we would have neglected the heterogeneity ##
 #################################################################
 
+
 ####################################
 ##### Plots of causal effects ######
 ####################################
 
+library(mcclust.ext)
+library(ggplot2)
+source("out_causal.RData")
+str(out_causal)
+
 post_means = lapply(out_causal, function(i) rowMeans(i))
+#post_means_nocluster = unlist(lapply(out_causal, function(i) mean(i)))
+
+vi      =  minVI(out_mcmc$simil_mat)$cl
+
+causal_cl1 = lapply(post_means, function (i) i[which(vi == 1)])
+causal_cl2 = lapply(post_means, function (i) i[which(vi == 2)])
+
+ggplot_fun = function(causal_cl1, causal_cl2, n, #post_means_nocluster,
+                      names_x, extended_names){
+  ggplot(data.frame(post.means = c(causal_cl1, causal_cl2),
+                    cluster    = as.factor(c(rep(1, length(causal_cl1)),rep(2, length(causal_cl2)) )),
+                    idx = 1:n),
+         aes(x= idx, y = post.means, color = cluster)) +
+    geom_point() + 
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          panel.background = element_blank(), axis.line = element_line(colour = "black"),
+          axis.title.x = element_text(size = 16),
+          axis.text.x = element_text(size = 14),
+          axis.title.y = element_text(size = 16),
+          legend.text=element_text(size=14),
+          legend.title = element_text(size=16),
+          plot.title = element_text(size = 16)) +
+    scale_color_brewer(palette = "Dark2") +
+    labs(title=paste(extended_names," - ", names_x),
+         x = "i", y = "Posterior mean of causal effect") + 
+    #geom_hline(yintercept = post_means_nocluster[j], color = "darkblue", lwd = 1) + 
+    geom_hline(yintercept = 0, linetype = "dashed") 
+  
+}
+
+par(mfrow=c(2,3))
+
+####################
+## Anthracyclines ##
+####################
+
+pdf(file = "CE_AC.pdf",   # The directory you want to save the file in
+    width = 9, # The width of the plot in inches
+    height = 7.5)
+ggplot_fun(causal_cl1[[1]], causal_cl2[[1]], nrow(X), "AC", "Anthracyclines")
+dev.off()
 
 
+########################
+## AntiHER2 therapies ##
+########################
 
-
-
+pdf(file = "CE_antiHER2.pdf",   # The directory you want to save the file in
+    width = 9, # The width of the plot in inches
+    height = 7.5)
+ggplot_fun(causal_cl1[[2]], causal_cl2[[2]], nrow(X), "antiHER2", "AntiHER2 Therapies")
+dev.off()
 
