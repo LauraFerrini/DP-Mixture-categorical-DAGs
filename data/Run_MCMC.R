@@ -187,10 +187,11 @@ p = prop_all[1:2, ] %>%
 p
 dev.off()
 pdf('data/spider_cl2.pdf', pointsize=10, width=9, height=9)
-prop_all[c(1,3), ] %>%
+p = prop_all[c(1,3), ] %>%
   ggradar(group.line.width = 1,
           group.point.size = 1.5,  group.colours = c("#d95f02", "grey")) +
   theme(legend.position = "bottom", legend.title = element_text(size = 17))
+p
 dev.off()
 
 #################################################
@@ -284,6 +285,6 @@ dev.off()
 pdf(file = "CE_antiHER2.pdf",   # The directory you want to save the file in
     width = 9, # The width of the plot in inches
     height = 7.5)
-ggplot_fun(causal_cl1[[2]], causal_cl2[[2]], nrow(X), "antiHER2", "AntiHER2 Therapies")
+ggplot_fun(causal_cl1[[2]], causal_cl2[[2]], nrow(X), "AntiHER2 Thearpies", "antiHER2")
 dev.off()
 
