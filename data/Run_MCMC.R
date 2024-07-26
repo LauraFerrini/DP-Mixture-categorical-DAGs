@@ -231,7 +231,34 @@ save(out_causal, file ="out_causal.RData")
 ## Causal effects if we would have neglected the heterogeneity ##
 #################################################################
 source("MCMC/MCMC_pooled.R")
+X = read.csv("data/breast_cancer.csv")
+n = nrow(X)
+q = ncol(X)
+# set the constraints of the adjacency matrix as before
+A_constr = matrix(0,q,q)
 
+colnames(A_constr) = rownames(A_constr) = colnames(X)
+
+A_constr[1,] = NA
+A_constr[,c(2,11,12,21)] = NA; A_constr[2,c(11,12,21)] = 0; A_constr[12,11] = 0
+
+risk_factors = c(3,4,8,9,10,15,16,17,18,19,20)
+therapies = c(6,7,13,14)
+
+A_constr[therapies, risk_factors] = NA
+
+S = 100000
+burn_in = 10000
+# pi ~ Beta(a_pi, b_pi)
+a_pi = 1
+b_pi = 2*q
+# Prior hyper-prameters on the concentration param of DP prior 
+a_alpha = 3; b_alpha = 1 
+
+# ne = NULL -> no constraints on the maximum number of neighborhoods per node
+a = 1
+
+X = as.matrix(X)
 out_pooled = mcmc_pooled(X, S, burn_in, a, a_pi, b_pi, A_constr, joint = TRUE)
 AC_pooled = sapply(out_pooled$Theta, function(theta) gammav(theta, y = "X1", v = "X6",
                                                             v_k = 1, v_h =0))
