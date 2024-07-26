@@ -156,7 +156,8 @@ mcmc_pooled = function(Y, S, burn_in, a, a_pi, b_pi, verbose = FALSE, A_constr =
       
       amat(bn_tmp) = Dag
       
-      theta = bn.fit(x = bn_tmp, data = Y, keep.fitted = TRUE, debug = FALSE, method = "bayes-sample")
+      theta = bn.fit(x = bn_tmp, data = Y, keep.fitted = TRUE, debug = FALSE,
+                     method = "bayes-sample")
       
       Theta[[t]] = theta
       
