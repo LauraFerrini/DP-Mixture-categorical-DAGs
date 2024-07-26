@@ -8,11 +8,18 @@ X = read.csv("data/breast_cancer.csv")
 head(X)
 n = nrow(X)
 q = ncol(X)
-# set the constraints
+# set the constraints of the adjacency matrix
 A_constr = matrix(0,q,q)
 
+colnames(A_constr) = rownames(A_constr) = colnames(X)
+
 A_constr[1,] = NA
-A_constr[,2] = NA
+A_constr[,c(2,11,12,21)] = NA; A_constr[2,c(11,12,21)] = 0; A_constr[12,11] = 0
+
+risk_factors = c(3,4,8,9,10,15,16,17,18,19,20)
+therapies = c(6,7,13,14)
+
+A_constr[therapies, risk_factors] = NA
 
 S = 100000
 burn_in = 10000
@@ -223,8 +230,13 @@ save(out_causal, file ="out_causal.RData")
 #################################################################
 ## Causal effects if we would have neglected the heterogeneity ##
 #################################################################
+source("MCMC/MCMC_pooled.R")
 
-
+out_pooled = mcmc_pooled(X, S, burn_in, a, a_pi, b_pi, A_constr, joint = TRUE)
+AC_pooled = sapply(out_pooled$Theta, function(theta) gammav(theta, y = "X1", v = "X6",
+                                                            v_k = 1, v_h =0))
+antiHER2_pooled = sapply(out_pooled$Theta, function(theta) gammav(theta, y = "X1", v = "X7",
+                                                            v_k = 1, v_h =0))
 ####################################
 ##### Plots of causal effects ######
 ####################################
@@ -243,7 +255,7 @@ causal_cl1 = lapply(post_means, function (i) i[which(vi == 1)])
 causal_cl2 = lapply(post_means, function (i) i[which(vi == 2)])
 
 ggplot_fun = function(causal_cl1, causal_cl2, n, #post_means_nocluster,
-                      names_x, extended_names){
+                      names_x){
   ggplot(data.frame(post.means = c(causal_cl1, causal_cl2),
                     cluster    = as.factor(c(rep(1, length(causal_cl1)),rep(2, length(causal_cl2)) )),
                     idx = 1:n),
@@ -258,7 +270,7 @@ ggplot_fun = function(causal_cl1, causal_cl2, n, #post_means_nocluster,
           legend.title = element_text(size=16),
           plot.title = element_text(size = 16)) +
     scale_color_brewer(palette = "Dark2") +
-    labs(title=paste(extended_names," - ", names_x),
+    labs(title= names_x,
          x = "i", y = "Posterior mean of causal effect") + 
     #geom_hline(yintercept = post_means_nocluster[j], color = "darkblue", lwd = 1) + 
     geom_hline(yintercept = 0, linetype = "dashed") 
@@ -274,7 +286,7 @@ par(mfrow=c(2,3))
 pdf(file = "CE_AC.pdf",   # The directory you want to save the file in
     width = 9, # The width of the plot in inches
     height = 7.5)
-ggplot_fun(causal_cl1[[1]], causal_cl2[[1]], nrow(X), "AC", "Anthracyclines")
+ggplot_fun(causal_cl1[[1]], causal_cl2[[1]], nrow(X), "AC")
 dev.off()
 
 
@@ -285,6 +297,6 @@ dev.off()
 pdf(file = "CE_antiHER2.pdf",   # The directory you want to save the file in
     width = 9, # The width of the plot in inches
     height = 7.5)
-ggplot_fun(causal_cl1[[2]], causal_cl2[[2]], nrow(X), "AntiHER2 Thearpies", "antiHER2")
+ggplot_fun(causal_cl1[[2]], causal_cl2[[2]], nrow(X), "AntiHER2 Thearpies")
 dev.off()
 
