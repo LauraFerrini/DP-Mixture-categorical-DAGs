@@ -6,15 +6,11 @@ library(gtools)
 
 source("MCMC/GIBBS_joint_rcpp.R")
 
-X = read.csv("data/breast_cancer.csv")
+X = read.csv("data/breast_cancer_reduced.csv")
 head(X)
 
-XX = X[X$antiHER2prev == 0 & X$ACprev == 0, -c(13,14)]
-
-head(XX)
-
-q = ncol(XX)
-n = nrow(XX)
+q = ncol(X)
+n = nrow(X)
 
 # set the constraints of the adjacency matrix
 A_constr = matrix(0,q,q)
@@ -40,7 +36,7 @@ a_alpha = 3; b_alpha = 1
 # ne = NULL -> no constraints on the maximum number of neighborhoods per node
 a = 1
 #I.cal  = sapply(1:ncol(X), function(j) length(unique(X[,j]))) # gives the number of levels for each var
-X = as.matrix(XX)
+X = as.matrix(X)
 
 t0 = proc.time()
 
