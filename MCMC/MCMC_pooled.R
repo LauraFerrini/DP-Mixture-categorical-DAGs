@@ -18,7 +18,8 @@ mcmc_pooled = function(Y, S, burn_in, a, a_pi, b_pi, verbose = FALSE, A_constr =
   source("MCMC/move_dag.R")
   source("MCMC/marg_dag.R")
   
-  
+  library(bnlearn)
+  library(gtools)
   n = nrow(Y)
   q = ncol(Y)
   
@@ -147,6 +148,7 @@ mcmc_pooled = function(Y, S, burn_in, a, a_pi, b_pi, verbose = FALSE, A_constr =
     
     cat("\nSampling parameters...")
     pb = txtProgressBar(min = 2, max = S, style = 3)
+    
     
     for(t in (burn_in + 1):S){
     
