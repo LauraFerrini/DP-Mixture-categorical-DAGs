@@ -1,6 +1,6 @@
 # Bayesian nonparametric mixtures of categorical directed graphs for heterogeneous causal inference
 
-This repository contains the R codes implementing DP mixture of categorical DAGs from arxiv.
+This repository contains the R codes implementing DP mixture of categorical DAGs.
 
 ## MCMC
 The folder MCMC contains the R codes for the implementation of the main MCMC algorithms for the DP mixture of categorical DAGs.  \\
