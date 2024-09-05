@@ -20,5 +20,5 @@ In particular:
 ## Data
 The folder data contains the R codes for the the analysis of cardiac side effects induced by anticancer treatments on breast cancer patients. 
 
- * breast_cancer_reduced.csv    : contains the data used in the analysis. 
- * Run_MCMC_reduced.R           : implements the MCMC on breast cancer patients and it produces plots for the analysis on the results
+ * breast_cancer.csv    : contains the data used in the analysis. 
+ * Run_MCMC.R           : implements the MCMC on breast cancer patients and it produces plots for the analysis on the results
