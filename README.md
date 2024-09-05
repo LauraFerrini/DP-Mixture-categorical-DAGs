@@ -3,7 +3,7 @@
 This repository contains the R codes implementing DP mixture of categorical DAGs.
 
 ## MCMC
-The folder MCMC contains the R codes for the implementation of the main MCMC algorithms for the DP mixture of categorical DAGs.  \\
+The folder MCMC contains the R codes for the implementation of the main MCMC algorithms for the DP mixture of categorical DAGs.  
 In particular: 
   * GIBBS_collapsed_rcpp.R       : contains the main MCMC algorithm for posterior inference
   * move_dag.R                   : implements the proposal distribution of DAGs
