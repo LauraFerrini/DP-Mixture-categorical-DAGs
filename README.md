@@ -1,4 +1,4 @@
-# Bayesian nonparametric mixtures of categorical directed graphs for heterogeneous causal inference
+# Bayesian nonparametric mixtures of categorical directed graphs for personalized causal inference
 
 This repository contains the R codes implementing DP mixture of categorical DAGs.
 
